@@ -1,46 +1,47 @@
 # windows-task
 
-Task for talent aquisition. Good luck:
+The task for talent acquisition. Good luck:
 
 
-01. Kreiraj novi branch koji sadrži tvoje ime.
+01. Create a new branch and give it your name.
 
-02. U kloniranom repo folderu kreiraj radni folder sa svojim imenom kao i file structure koji ti odgovara za ovaj task
+02. In the cloned repo, create a working folder and give it your name. Then, create a file structure inside as you see fit.
 
-03. Na svom AWS Accountu napravi IAM usera za terraform, read-only IAM Usere,
+03. On your AWS account, create IAM Users using terraform:
+	- terraform user
+	- read-only user
 
-04. Koristeći terraform kreiraj: 
-	- VPC u Frankfurt zoni
-	- Route 53 Privatnu zonu
-	- S3 bucket
-	- 1 VM za domain kontroler
+04. Create using terraform:
+	- VPC in eu-central-1 region
+	- Route53 Private Zone
+	- S3 Bucket
+	- 1 EC2 Instance for domain controller role
 
-05. Na VM instaliraj MS Active Directory Service i DNS server
+05. Install Microsoft DNS and Active Directory Domain Services on EC2 instance
 
-06. Konfiguriši GPO koji će svim računarima u OU "Task Computers" dodati DNS sufix svog active direktorija
+06. Create a GPO to append an AD DNS suffix to all computers in OU "Task Computers"
 
-07. Koristeći powershell kreiraj bootstrap skriptu koja će svaki novi windows server, kreiran od strane terraforma:
-	- dodati u Active Directory
-	- skinuti neki custom powershel skript file sa s3 bucketa
-	- okidati tu skrptu automatski svake subote u 00:00 na serveru
+07. Create a bootstrap PowerShell script that will join new EC2 instances, created with terraform) to AD Domain and:
+	- download a custom PowerShell script from your bucket
+	- trigger downloaded script every Saturday at 00:00
 
-08. Koristeći terraform kreiraj wsus server i prebaci ga u AD OU "Admin Computers" 
+08. Create a WSUS server using terraform and move it to OU "Admin Computers" 
 
-09. Konfiguriši WSUS Server i kao file share server.
+09. WSUS server needs to act as a file server as well. Configure it
 
-10. Kreiraj testnu mašinu koristeći terraform i prebaci je u OU "Task Computers"
+10. Create a test server with terraform and move it to OU "Task Computers."
 
-11. Kreiraj domain usera i konfiguriši GPO da se moći RDPovati samo na mašine iz OU "Task Computers"
+11. Create an AD domain user and create a GPO that will allow this user to log only to computers located in OU "Task Computers"
 
-12. Strogo definisati ingress saobraćaj na windows mašinama koristeći AWS Security Groups i terraform
+12. Strictly control allowed traffic in VPC using Security Groups in terraform
 
-13. Pushaj svoj branch na github repo i napravi PR u kojem ćeš navesti kredencijale za provjeru AWS accounta i AD kredencijale
+13. Push your completed task to a GitHub repo and create a PR that will include:
+	- access credentials for AWS account
+	- access credentials for Active Directory
+	- RDP instructions for your servers
 
 13. Bonus Tasks
-	- Kreiraj Lambdu koja će raditi snapshot EBS volume-a ako Volume servera ima neki Tag (npr: Snapshot: True)
+	- Create a Lambda that will take a snapshot of every EBS volume that contains a custom TAG
+	- Using terraform, create additional VPC and connect it to the first VPS using VPC Peering
+	- Apply security best practices to all tasks
 	
-14. Bonus Task
-	- Koristeći Terraform: kreiraj dodatni VPC i koristeći VPC Peering upari ga sa prvim VPCom
-	
-15. Bonus Task
-	- Sve usere, pristup serverima kao i placement samih servera uraditi po security best practicima u industriji
