@@ -1,0 +1,4 @@
+aws_access_key    = "Ins3cur3Acc3ssKey"
+aws_secret_key    = "Ins3cur3S3cr3tK3y"
+domain_passwd     = "Ins3cur3Pa$$W0rd"
+public_key        =  "ssh-rsa AABBCC"
