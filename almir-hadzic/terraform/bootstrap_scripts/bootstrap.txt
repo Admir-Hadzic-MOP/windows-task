@@ -1,0 +1,45 @@
+<powershell>
+$creds       = New-Object -TypeName PSCredential -ArgumentList "Administrator",(ConvertTo-SecureString -String "${domain_passwd}" -AsPlainText -Force)[0]
+$scriptPath  = "C:\scripts\Custom-Script.ps1"
+$scriptName  = "Custom-Script.ps1"
+
+try {
+    ## Set DC as DNS
+    Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses ( "${dc1_private_ip}" )
+
+    ## Add server to domain
+    Add-Computer -NewName "${new_name}" -DomainName "${domain_name}" -Credential $creds
+
+    ## Download Script from s3 Bucket
+    New-Item "C:\scripts\" -Type Directory
+    Set-AWSCredential -AccessKey "${aws_access_key}" -SecretKey "${aws_secret_key}"
+    Read-S3Object -BucketName "${s3_bucket_name}" -Key $scriptName -File $scriptPath
+
+    ## Register the new PowerShell scheduled task
+    # The name and description of  scheduled task.
+    $taskName = "Runs custom PS script."
+    $description = "Outputs hello word."
+
+    # Create Task Action
+    $taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File $scriptPath"
+
+    # Create Task Trigger
+    $taskTrigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Saturday -At 0am
+
+    # Register the scheduled task
+    Register-ScheduledTask `
+        -TaskName $taskName `
+        -Action $taskAction `
+        -Trigger $taskTrigger `
+        -Description $description
+
+    # Restart server
+    Restart-Computer -Force
+}
+catch
+{
+    New-Item "C:\log" -Type Directory
+    write-output "$error[0] $_"  |  Out-File C:\log\ErrorLog.txt
+}
+</powershell>
+ 
